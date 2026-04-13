@@ -84,10 +84,6 @@ let lastTime = 0;
 let animationId = null;
 let gameOver = false;
 let paused = false;
-let muted = false;
-let audioCtx = null;
-let bgmStep = 0;
-let bgmTimer = 0;
 let scoreSaved = false;
 
 const RANKING_KEY = "tetris-ranking-v1";
@@ -146,67 +142,6 @@ function rotate(matrix) {
   return rotated;
 }
 
-function playSound(kind) {
-  if (muted) return;
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!AudioCtx) return;
-  if (!audioCtx) audioCtx = new AudioCtx();
-  if (audioCtx.state === "suspended") {
-    audioCtx.resume().catch(() => {});
-  }
-
-  const oscillator = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  oscillator.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  const toneMap = {
-    move: [220, 0.02, "square"],
-    rotate: [330, 0.03, "triangle"],
-    lock: [110, 0.04, "sawtooth"],
-    line: [520, 0.08, "square"],
-    hold: [260, 0.05, "triangle"],
-    over: [95, 0.2, "sine"],
-  };
-  const [frequency, duration, wave] = toneMap[kind] || toneMap.move;
-
-  oscillator.type = wave;
-  oscillator.frequency.value = frequency;
-  gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.18, audioCtx.currentTime + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-  oscillator.start(audioCtx.currentTime);
-  oscillator.stop(audioCtx.currentTime + duration + 0.02);
-}
-
-function playBgm(levelValue) {
-  if (muted) return;
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!AudioCtx) return;
-  if (!audioCtx) audioCtx = new AudioCtx();
-  if (audioCtx.state === "suspended") {
-    audioCtx.resume().catch(() => {});
-  }
-
-  const scale = [261.63, 293.66, 329.63, 392.0, 523.25, 392.0, 329.63, 293.66];
-  const speedBoost = Math.min(4, Math.floor((levelValue - 1) / 2));
-  const noteIndex = (bgmStep + speedBoost) % scale.length;
-  const frequency = scale[noteIndex];
-  bgmStep += 1;
-
-  const oscillator = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  oscillator.connect(gain);
-  gain.connect(audioCtx.destination);
-  oscillator.type = "sine";
-  oscillator.frequency.value = frequency;
-  gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-  gain.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.13);
-  oscillator.start(audioCtx.currentTime);
-  oscillator.stop(audioCtx.currentTime + 0.15);
-}
-
 function loadRanking() {
   try {
     const raw = localStorage.getItem(RANKING_KEY);
@@ -263,7 +198,6 @@ function clearLines() {
     lines += cleared;
     level = Math.floor(lines / 10) + 1;
     updateInfo();
-    playSound("line");
   }
 }
 
@@ -295,7 +229,6 @@ function spawnPiece() {
   if (collide(current)) {
     gameOver = true;
     statusEl.textContent = "게임 오버! R 키로 다시 시작하세요.";
-    playSound("over");
     if (!scoreSaved && score > 0) {
       saveRanking(score, level);
       scoreSaved = true;
@@ -317,7 +250,6 @@ function holdPiece() {
     if (collide(current)) {
       gameOver = true;
       statusEl.textContent = "게임 오버! R 키로 다시 시작하세요.";
-      playSound("over");
       if (!scoreSaved && score > 0) {
         saveRanking(score, level);
         scoreSaved = true;
@@ -326,7 +258,6 @@ function holdPiece() {
   }
 
   drawMini(holdCtx, holdType);
-  playSound("hold");
 }
 
 function drop() {
@@ -335,7 +266,6 @@ function drop() {
   if (collide(current)) {
     current.y--;
     merge();
-    playSound("lock");
     clearLines();
     spawnPiece();
   }
@@ -355,7 +285,6 @@ function move(dir) {
     current.x -= dir;
     return;
   }
-  playSound("move");
 }
 
 function playerRotate() {
@@ -367,7 +296,6 @@ function playerRotate() {
   for (const offset of kicks) {
     current.x += offset;
     if (!collide(current)) {
-      playSound("rotate");
       return;
     }
     current.x -= offset;
@@ -436,14 +364,8 @@ function update(time = 0) {
 
   if (!gameOver && !paused) {
     dropCounter += delta;
-    bgmTimer += delta;
     const speed = Math.max(120, 900 - (level - 1) * 75);
     if (dropCounter > speed) drop();
-    const beat = Math.max(130, 340 - level * 14);
-    if (bgmTimer > beat) {
-      playBgm(level);
-      bgmTimer = 0;
-    }
   }
 
   drawBoard();
@@ -465,8 +387,6 @@ function resetGame() {
   holdType = null;
   nextType = randomType();
   canHold = true;
-  bgmStep = 0;
-  bgmTimer = 0;
   scoreSaved = false;
 
   statusEl.textContent = "게임 시작!";
@@ -482,11 +402,6 @@ function togglePause() {
   if (gameOver) return;
   paused = !paused;
   statusEl.textContent = paused ? "일시정지됨 (P로 재개)" : "게임 진행 중";
-}
-
-function toggleMute() {
-  muted = !muted;
-  statusEl.textContent = muted ? "음소거됨 (M으로 해제)" : "사운드 켜짐";
 }
 
 function bindTouchControls() {
@@ -525,9 +440,6 @@ document.addEventListener("keydown", (event) => {
       break;
     case "KeyP":
       togglePause();
-      break;
-    case "KeyM":
-      toggleMute();
       break;
     case "KeyR":
       resetGame();
