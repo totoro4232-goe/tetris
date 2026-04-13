@@ -1,0 +1,164 @@
+:root {
+  --bg: #111827;
+  --panel: #1f2937;
+  --text: #f9fafb;
+  --muted: #9ca3af;
+  --border: #374151;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: radial-gradient(circle at top, #1f2937, #0f172a 60%);
+  color: var(--text);
+}
+
+.app {
+  width: min(920px, 94vw);
+  display: grid;
+  grid-template-columns: auto 260px;
+  gap: 20px;
+  align-items: start;
+}
+
+.game-panel {
+  background: rgba(17, 24, 39, 0.75);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+}
+
+.game-panel h1 {
+  margin: 0 0 12px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+#board {
+  display: block;
+  border-radius: 8px;
+  border: 2px solid #4b5563;
+  background: #0b1020;
+}
+
+#next,
+#hold {
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+  border: 1px solid #4b5563;
+  background: #0b1020;
+}
+
+.info-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.card {
+  background: rgba(31, 41, 55, 0.8);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.card h2 {
+  margin: 0 0 8px;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+.card p {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.controls ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  color: #e5e7eb;
+  font-size: 0.92rem;
+}
+
+.ranking-card ol {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  color: #e5e7eb;
+  font-size: 0.9rem;
+}
+
+.ranking-card li {
+  min-height: 1.1em;
+}
+
+.preview-card h2,
+.mobile-controls h2 {
+  margin-bottom: 10px;
+}
+
+.mobile-controls {
+  display: none;
+}
+
+.touch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.touch-grid button {
+  border: 1px solid #4b5563;
+  background: #111827;
+  color: #f9fafb;
+  border-radius: 8px;
+  padding: 10px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  touch-action: manipulation;
+}
+
+.touch-grid button:active {
+  transform: scale(0.98);
+  background: #1f2937;
+}
+
+.status {
+  margin: 6px 4px 0;
+  color: #93c5fd;
+  font-size: 0.93rem;
+  min-height: 1.2em;
+}
+
+@media (max-width: 780px) {
+  .app {
+    grid-template-columns: 1fr;
+  }
+
+  .info-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .controls {
+    grid-column: span 2;
+  }
+
+  .mobile-controls {
+    display: block;
+    grid-column: span 2;
+  }
+}

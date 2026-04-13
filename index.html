@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>테트리스</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="game-panel">
+        <h1>테트리스</h1>
+        <canvas id="board" width="300" height="600" aria-label="테트리스 보드"></canvas>
+      </section>
+
+      <aside class="info-panel">
+        <div class="card preview-card">
+          <h2>다음 블록</h2>
+          <canvas id="next" width="120" height="120" aria-label="다음 블록 미리보기"></canvas>
+        </div>
+        <div class="card preview-card">
+          <h2>홀드 블록</h2>
+          <canvas id="hold" width="120" height="120" aria-label="홀드 블록"></canvas>
+        </div>
+        <div class="card">
+          <h2>점수</h2>
+          <p id="score">0</p>
+        </div>
+        <div class="card">
+          <h2>레벨</h2>
+          <p id="level">1</p>
+        </div>
+        <div class="card">
+          <h2>지운 줄</h2>
+          <p id="lines">0</p>
+        </div>
+        <div class="card ranking-card">
+          <h2>랭킹 TOP 5</h2>
+          <ol id="ranking-list"></ol>
+        </div>
+        <div class="card controls">
+          <h2>조작법</h2>
+          <ul>
+            <li>← → : 이동</li>
+            <li>↑ : 회전</li>
+            <li>↓ : 빠르게 내리기</li>
+            <li>스페이스 : 즉시 내리기</li>
+            <li>C : 홀드</li>
+            <li>P : 일시정지</li>
+            <li>M : 음소거</li>
+            <li>R : 재시작</li>
+          </ul>
+        </div>
+        <div class="card mobile-controls">
+          <h2>모바일 버튼</h2>
+          <div class="touch-grid">
+            <button id="btn-left" type="button">◀</button>
+            <button id="btn-rotate" type="button">⟳</button>
+            <button id="btn-right" type="button">▶</button>
+            <button id="btn-down" type="button">▼</button>
+            <button id="btn-drop" type="button">DROP</button>
+            <button id="btn-hold" type="button">HOLD</button>
+          </div>
+        </div>
+        <p id="status" class="status">게임 시작!</p>
+      </aside>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
